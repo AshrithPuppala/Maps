@@ -18,7 +18,10 @@ const PanoramaViewer: React.FC<PanoramaViewerProps> = ({ imageUrl }) => {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.target = new THREE.Vector3(0, 0, 0);
+    
+    // Instead of attaching .target to the camera (which TS errors on), 
+    // we use a local variable to track the look-at point.
+    const target = new THREE.Vector3(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
@@ -86,11 +89,12 @@ const PanoramaViewer: React.FC<PanoramaViewerProps> = ({ imageUrl }) => {
       phi = THREE.MathUtils.degToRad(90 - lat);
       theta = THREE.MathUtils.degToRad(lon);
 
-      camera.target.x = 500 * Math.sin(phi) * Math.cos(theta);
-      camera.target.y = 500 * Math.cos(phi);
-      camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
+      // Update the local target variable instead of camera.target
+      target.x = 500 * Math.sin(phi) * Math.cos(theta);
+      target.y = 500 * Math.cos(phi);
+      target.z = 500 * Math.sin(phi) * Math.sin(theta);
 
-      camera.lookAt(camera.target);
+      camera.lookAt(target);
       renderer.render(scene, camera);
     };
 
@@ -101,7 +105,9 @@ const PanoramaViewer: React.FC<PanoramaViewerProps> = ({ imageUrl }) => {
       cancelAnimationFrame(animationId);
       if (mountRef.current) {
         mountRef.current.removeEventListener('mousedown', onPointerDown);
-        mountRef.current.removeChild(renderer.domElement);
+        if (mountRef.current.contains(renderer.domElement)) {
+            mountRef.current.removeChild(renderer.domElement);
+        }
       }
       document.removeEventListener('mousemove', onPointerMove);
       document.removeEventListener('mouseup', onPointerUp);

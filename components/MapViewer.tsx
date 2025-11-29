@@ -134,7 +134,8 @@ const MapViewer: React.FC<MapViewerProps> = ({ activeLayer, onLocationSelect }) 
     fetchData();
   }, [activeLayer]);
 
-  const onEachFeature = (feature: GeoJSONFeature, layer: L.Layer) => {
+  // Use 'any' type for feature here to bypass strict GeoJSON interface conflicts with react-leaflet
+  const onEachFeature = (feature: any, layer: L.Layer) => {
     // Robust name extraction handling various casing and keys
     const p = feature.properties || {};
     const name = p.name || p.Name || p.NAME || 
