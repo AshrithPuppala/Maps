@@ -1,6 +1,6 @@
 import React from 'react';
 import { SelectedLocation, SimulationConfig, AnalysisResult, MapLayer } from '../types';
-import { BuildingStorefrontIcon, SparklesIcon, MapPinIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import { BuildingStorefrontIcon, SparklesIcon, MapPinIcon, GlobeAltIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import ReactMarkdown from 'react-markdown';
 import PanoramaViewer from './PanoramaViewer';
 
@@ -179,17 +179,26 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="space-y-6 pt-4 border-t border-gray-100 animate-fade-in">
             
             {/* Generated Image/Panorama */}
-            {analysis.imageUrl && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider flex justify-between items-center">
+            <div className="space-y-2">
+               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider flex justify-between items-center">
                   <span>Projected Storefront</span>
-                  <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200">Interactive 360°</span>
-                </h3>
-                <div className="relative group rounded-xl overflow-hidden shadow-md border border-gray-200 aspect-video bg-gray-900">
-                  <PanoramaViewer imageUrl={analysis.imageUrl} />
-                </div>
-              </div>
-            )}
+                  {analysis.imageUrl && (
+                    <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200">Interactive 360°</span>
+                  )}
+               </h3>
+               
+               {analysis.imageUrl ? (
+                 <div className="relative group rounded-xl overflow-hidden shadow-md border border-gray-200 aspect-video bg-gray-900">
+                    <PanoramaViewer imageUrl={analysis.imageUrl} />
+                 </div>
+               ) : (
+                 <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 aspect-video text-gray-500">
+                    <PhotoIcon className="h-10 w-10 mb-2 opacity-50" />
+                    <span className="text-sm">Visualization Unavailable</span>
+                    <span className="text-xs text-center px-4 mt-1 opacity-70">The AI could not generate a visual for this specific combination.</span>
+                 </div>
+               )}
+            </div>
 
             {/* Analysis Text */}
             {analysis.markdownAnalysis && (

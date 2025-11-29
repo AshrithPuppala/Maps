@@ -13,8 +13,8 @@ const PanoramaViewer: React.FC<PanoramaViewerProps> = ({ imageUrl }) => {
     if (!mountRef.current) return;
 
     // --- Scene Setup ---
-    const width = mountRef.current.clientWidth;
-    const height = mountRef.current.clientHeight;
+    let width = mountRef.current.clientWidth;
+    let height = mountRef.current.clientHeight;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
@@ -75,6 +75,21 @@ const PanoramaViewer: React.FC<PanoramaViewerProps> = ({ imageUrl }) => {
     document.addEventListener('mousemove', onPointerMove);
     document.addEventListener('mouseup', onPointerUp);
 
+    // --- Resize Handler ---
+    const handleResize = () => {
+        if (!mountRef.current) return;
+        width = mountRef.current.clientWidth;
+        height = mountRef.current.clientHeight;
+        
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+    };
+
+    const resizeObserver = new ResizeObserver(() => handleResize());
+    resizeObserver.observe(mountRef.current);
+
+
     // --- Animation Loop ---
     let animationId: number;
     const animate = () => {
@@ -103,6 +118,7 @@ const PanoramaViewer: React.FC<PanoramaViewerProps> = ({ imageUrl }) => {
     // --- Cleanup ---
     return () => {
       cancelAnimationFrame(animationId);
+      resizeObserver.disconnect();
       if (mountRef.current) {
         mountRef.current.removeEventListener('mousedown', onPointerDown);
         if (mountRef.current.contains(renderer.domElement)) {
