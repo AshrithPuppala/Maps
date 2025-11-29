@@ -60,7 +60,7 @@ export const generateShopVisualization = async (
     console.log("Generating image with prompt:", prompt);
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-image-preview', 
+      model: 'gemini-2.5-flash-image', 
       contents: prompt,
       config: {
         // No strict aspect ratio to allow panorama generation
