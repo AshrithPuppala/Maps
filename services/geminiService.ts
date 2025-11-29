@@ -39,39 +39,43 @@ export const generateShopVisualization = async (
   config: SimulationConfig
 ): Promise<string | undefined> => {
   try {
-    // Construct a prompt optimized for 360 panorama generation
-    // We explicitly ask for a "Concept Visualization" rather than "Real Street View"
-    // to reduce the chance of Safety Filter refusals.
+    // We use a more generic prompt to avoid "Location Privacy" safety filters.
+    // Instead of asking for the *real* street, we ask for a concept *inspired* by it.
     const prompt = `
-      Create a photorealistic 3D architectural concept visualization of a store in ${location.name}, Delhi.
+      Generate a professional 3D architectural visualization (concept render).
       
-      Format: 360-degree equirectangular panorama (VR ready).
+      Subject: A ${config.architecturalStyle} ${config.businessType} storefront.
+      Context: A busy street in Delhi, India. The vibe should match the neighborhood of "${location.name}".
+      Format: 360-degree equirectangular panorama.
+      Lighting: ${config.timeOfDay}.
       
-      Scene Details:
-      - Subject: A ${config.businessType} with a "${config.architecturalStyle}" design.
-      - Environment: A bustling street typical of ${location.name}, Delhi.
-      - Atmosphere: ${config.timeOfDay}.
-      - Perspective: Standing on the sidewalk directly in front of the shop entrance.
-      - Technical: High resolution, seamless edges, correct equirectangular projection.
-      
-      IMPORTANT: This is a design concept render, not a real photograph.
+      Requirements: 
+      - High resolution (4k).
+      - Seamless panoramic projection.
+      - Photorealistic textures.
+      - NO text overlays or watermarks.
+      - Focus on the architectural design and street atmosphere.
     `;
 
+    console.log("Generating image with prompt:", prompt);
+
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image', 
+      model: 'gemini-3-pro-image-preview', 
       contents: prompt,
       config: {
-        // We request no specific aspect ratio constraint to let the model decide best dimensions for panorama, 
-        // or prompt text handles the content structure.
+        // No strict aspect ratio to allow panorama generation
       }
     });
 
+    // Iterate through parts to find the image
     for (const part of response.candidates?.[0]?.content?.parts || []) {
       if (part.inlineData) {
+        console.log("Image generation successful");
         return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
       }
     }
     
+    console.warn("No image data found in response:", response);
     return undefined;
   } catch (error) {
     console.error("Error generating visualization:", error);

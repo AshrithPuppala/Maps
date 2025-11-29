@@ -176,7 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Results Area */}
         {(analysis.markdownAnalysis || analysis.imageUrl) && (
-          <div className="space-y-6 pt-4 border-t border-gray-100 animate-fade-in">
+          <div className="space-y-6 pt-4 border-t border-gray-100 animate-fade-in pb-10">
             
             {/* Generated Image/Panorama */}
             <div className="space-y-2">
@@ -192,10 +192,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <PanoramaViewer imageUrl={analysis.imageUrl} />
                  </div>
                ) : (
-                 <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 aspect-video text-gray-500">
+                 <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 aspect-video text-gray-500 p-6 text-center">
                     <PhotoIcon className="h-10 w-10 mb-2 opacity-50" />
-                    <span className="text-sm">Visualization Unavailable</span>
-                    <span className="text-xs text-center px-4 mt-1 opacity-70">The AI could not generate a visual for this specific combination.</span>
+                    <span className="text-sm font-medium">Visualization Unavailable</span>
+                    <span className="text-xs mt-1 opacity-70 max-w-[200px]">
+                        The AI could not generate a visual for this specific request. Try a different "Architectural Style" or a more generic location.
+                    </span>
                  </div>
                )}
             </div>

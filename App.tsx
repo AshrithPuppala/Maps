@@ -27,11 +27,15 @@ const App: React.FC = () => {
     setAnalysisResult(prev => ({ ...prev, loading: true, markdownAnalysis: '', imageUrl: undefined }));
 
     try {
+      console.log("Starting generation...");
       // Run both generation tasks in parallel
       const [analysisText, imageUrl] = await Promise.all([
         generateLocationAnalysis(selectedLocation, config),
         generateShopVisualization(selectedLocation, config)
       ]);
+
+      console.log("Generation complete.");
+      if (!imageUrl) console.warn("Image URL is undefined");
 
       setAnalysisResult({
         markdownAnalysis: analysisText,
