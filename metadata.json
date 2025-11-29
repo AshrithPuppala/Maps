@@ -1,0 +1,5 @@
+{
+  "name": "DelhiBizViz - Location Scouter",
+  "description": "An interactive business location finder for Delhi using GeoJSON data. Select a location to generate AI-powered market analysis and photorealistic 3D visualizations of your future shop storefront in that specific neighborhood.",
+  "requestFramePermissions": []
+}
