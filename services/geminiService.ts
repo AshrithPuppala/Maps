@@ -39,22 +39,17 @@ export const generateShopVisualization = async (
   config: SimulationConfig
 ): Promise<string | undefined> => {
   try {
-    // We use a more generic prompt to avoid "Location Privacy" safety filters.
-    // Instead of asking for the *real* street, we ask for a concept *inspired* by it.
+    // Optimized prompt for gemini-2.5-flash-image
+    // We request a wide angle view to simulate a panorama
     const prompt = `
-      Generate a professional 3D architectural visualization (concept render).
+      Create a wide-angle architectural concept visualization.
       
-      Subject: A ${config.architecturalStyle} ${config.businessType} storefront.
-      Context: A busy street in Delhi, India. The vibe should match the neighborhood of "${location.name}".
-      Format: 360-degree equirectangular panorama.
-      Lighting: ${config.timeOfDay}.
+      Subject: A storefront for a ${config.architecturalStyle} ${config.businessType}.
+      Setting: Located in a busy street in ${location.name}, Delhi, India.
+      Atmosphere: ${config.timeOfDay}, bustling, authentic street vibes.
+      Style: Photorealistic, architectural render.
       
-      Requirements: 
-      - High resolution (4k).
-      - Seamless panoramic projection.
-      - Photorealistic textures.
-      - NO text overlays or watermarks.
-      - Focus on the architectural design and street atmosphere.
+      View: Wide street level view, showing the shop facade and the immediate street context.
     `;
 
     console.log("Generating image with prompt:", prompt);
@@ -63,7 +58,9 @@ export const generateShopVisualization = async (
       model: 'gemini-2.5-flash-image', 
       contents: prompt,
       config: {
-        // No strict aspect ratio to allow panorama generation
+        imageConfig: {
+            aspectRatio: "16:9" 
+        }
       }
     });
 

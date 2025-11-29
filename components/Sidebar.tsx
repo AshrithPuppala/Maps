@@ -194,9 +194,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                ) : (
                  <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 aspect-video text-gray-500 p-6 text-center">
                     <PhotoIcon className="h-10 w-10 mb-2 opacity-50" />
-                    <span className="text-sm font-medium">Visualization Unavailable</span>
+                    <span className="text-sm font-medium">Visualization Temporarily Unavailable</span>
                     <span className="text-xs mt-1 opacity-70 max-w-[200px]">
-                        The AI could not generate a visual for this specific request. Try a different "Architectural Style" or a more generic location.
+                       You may have hit the free tier rate limit or the model is busy. Please try again in a moment.
                     </span>
                  </div>
                )}
