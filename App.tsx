@@ -24,30 +24,39 @@ const App: React.FC = () => {
   const handleGenerate = async () => {
     if (!selectedLocation) return;
 
+    // Reset state but keep loading true
     setAnalysisResult(prev => ({ ...prev, loading: true, markdownAnalysis: '', imageUrl: undefined }));
 
     try {
-      console.log("Starting generation...");
-      // Run both generation tasks in parallel
-      const [analysisText, imageUrl] = await Promise.all([
-        generateLocationAnalysis(selectedLocation, config),
-        generateShopVisualization(selectedLocation, config)
-      ]);
+      console.log("Starting sequential generation...");
+      
+      // Step 1: Generate Text Analysis first (Lighter request)
+      const analysisText = await generateLocationAnalysis(selectedLocation, config);
+      
+      // Update UI immediately so user sees text while waiting for image
+      setAnalysisResult(prev => ({ 
+        ...prev, 
+        markdownAnalysis: analysisText 
+      }));
 
-      console.log("Generation complete.");
-      if (!imageUrl) console.warn("Image URL is undefined");
+      // Step 2: Generate Image (Heavier request)
+      // We do this second so if it fails (429), the user still has the text analysis
+      const imageUrl = await generateShopVisualization(selectedLocation, config);
 
-      setAnalysisResult({
-        markdownAnalysis: analysisText,
+      if (!imageUrl) console.warn("Image generation returned undefined (likely rate limited)");
+
+      setAnalysisResult(prev => ({
+        ...prev,
         imageUrl: imageUrl,
         loading: false
-      });
+      }));
+
     } catch (error) {
       console.error("Generation failed", error);
       setAnalysisResult(prev => ({ 
         ...prev, 
         loading: false, 
-        markdownAnalysis: "An error occurred while communicating with the AI service. Please try again." 
+        markdownAnalysis: prev.markdownAnalysis || "An error occurred while communicating with the AI service. Please try again." 
       }));
     }
   };

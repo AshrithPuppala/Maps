@@ -4,6 +4,9 @@ import { SimulationConfig, SelectedLocation } from "../types";
 // Initialize Gemini Client
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
+// Helper to throttle requests
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const generateLocationAnalysis = async (
   location: SelectedLocation,
   config: SimulationConfig
@@ -39,8 +42,10 @@ export const generateShopVisualization = async (
   config: SimulationConfig
 ): Promise<string | undefined> => {
   try {
+    // Artificial delay to prevent "429 Too Many Requests" when running immediately after text generation
+    await delay(1000);
+
     // Optimized prompt for gemini-2.5-flash-image
-    // We request a wide angle view to simulate a panorama
     const prompt = `
       Create a wide-angle architectural concept visualization.
       
@@ -75,7 +80,8 @@ export const generateShopVisualization = async (
     console.warn("No image data found in response:", response);
     return undefined;
   } catch (error) {
-    console.error("Error generating visualization:", error);
+    // Log specifically if it's a quota issue so we know, but return undefined so UI handles it gracefully
+    console.warn("Visualization failed (likely rate limit):", error);
     return undefined;
   }
 };
