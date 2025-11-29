@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Ensure Leaflet z-indexes play nicely with our modals/sidebars */
+.leaflet-pane {
+  z-index: 10;
+}
+.leaflet-top, .leaflet-bottom {
+  z-index: 20;
+}
